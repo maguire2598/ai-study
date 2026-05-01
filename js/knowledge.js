@@ -10,7 +10,10 @@ const KnowledgeGraph = {
       planData.weeks.filter(w => w.status === 'done').forEach(w => doneChapters.add(w.chapterId));
     }
 
+    if (!Array.isArray(TOPICS)) return '<div class="empty-state"><div class="icon">🔍</div><p>知识数据加载失败</p></div>';
+
     const ordered = [...TOPICS].sort((a, b) => a.order - b.order);
+    const firstUndoneIdx = ordered.findIndex(t => !doneChapters.has(t.id));
 
     return `
       <div class="knowledge-page">
@@ -20,7 +23,7 @@ const KnowledgeGraph = {
         <div id="graph-container" style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 0;">
           ${ordered.map((topic, i) => {
             const isDone = doneChapters.has(topic.id);
-            const deps = topic.dependsOn.map(depId => {
+            const deps = (topic.dependsOn || []).map(depId => {
               const dep = TOPICS.find(t => t.id === depId);
               return dep ? dep.title : depId;
             });
@@ -30,7 +33,7 @@ const KnowledgeGraph = {
               statusColor = 'var(--green-600)';
               statusBg = 'var(--green-50)';
               statusLabel = '✓ 已掌握';
-            } else if (i === doneChapters.size) {
+            } else if (i === firstUndoneIdx) {
               statusColor = 'var(--amber-500)';
               statusBg = 'var(--amber-100)';
               statusLabel = '⏳ 建议学习';
