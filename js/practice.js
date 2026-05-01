@@ -5,6 +5,7 @@ const Practice = {
   filteredQuestions: [],
 
   _safeJSON(raw, fallback) {
+    if (!raw) return fallback;
     try { return JSON.parse(raw); } catch (e) { return fallback; }
   },
 
