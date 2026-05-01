@@ -1,9 +1,51 @@
 const Plan = {
+  _safeJSON(raw, fallback) {
+    try { return JSON.parse(raw); } catch (e) { return fallback; }
+  },
+
+  _buildPlanCard(planData) {
+    const done = planData.weeks.filter(w => w.status === 'done').length;
+    const total = planData.weeks.length;
+    const progress = total > 0 ? Math.round(done / total * 100) : 0;
+
+    return `
+      <div class="card">
+        <div class="card-header">📋 我的复习计划</div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);margin-bottom:8px;">
+          <span>完成进度</span><span>${done}/${total} 周</span>
+        </div>
+        <div class="progress-bar" style="margin-bottom:16px;">
+          <div class="progress-fill" style="width:${progress}%;"></div>
+        </div>
+        <div id="plan-weeks">
+          ${planData.weeks.map((w, i) => {
+            const statusIcon = w.status === 'done' ? '✓' : w.status === 'active' ? '⏳' : '○';
+            const statusClass = w.status === 'done' ? 'tag-green' : w.status === 'active' ? 'tag-amber' : 'tag-gray';
+            const statusText = w.status === 'done' ? '已完成' : w.status === 'active' ? '进行中' : '待开始';
+            const opacity = w.status === 'done' ? '' : w.status === 'active' ? '' : 'opacity:0.65;';
+            return `
+              <div style="display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04);${opacity}">
+                <div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;background:${w.status === 'active' ? 'var(--amber-500)' : 'var(--amber-100)'};color:${w.status === 'active' ? '#fff' : 'var(--amber-700)'};">${i+1}</div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:13px;font-weight:600;color:var(--gray-800);">${w.title}</div>
+                  <div style="font-size:11px;color:var(--gray-600);">${w.startDate} ~ ${w.endDate}</div>
+                </div>
+                <span class="tag ${statusClass}">${statusIcon} ${statusText}</span>
+                ${w.status !== 'done' ? `<button class="btn btn-sm btn-primary mark-done-btn" data-week="${i}">标记完成</button>` : ''}
+              </div>`;
+          }).join('')}
+        </div>
+        <button id="btn-reset-plan" class="btn btn-sm btn-secondary" style="margin-top:12px;">🔄 重新制定</button>
+      </div>`;
+  },
+
   render() {
-    const saved = JSON.parse(localStorage.getItem('studyPlan') || 'null');
+    const saved = this._safeJSON(localStorage.getItem('studyPlan'), null);
     const hasPlan = saved && saved.weeks;
 
-    let setupHTML = `
+    const isDefault2h = !saved || saved.hoursPerDay == null || saved.hoursPerDay == 2;
+
+    const setupHTML = `
       <div class="card">
         <div class="card-header">⚙️ 设置复习目标</div>
         <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
@@ -23,7 +65,7 @@ const Plan = {
             <label style="font-size:12px;color:var(--gray-600);display:block;margin-bottom:4px;">⏰ 每天可投入</label>
             <select id="plan-hours" class="input">
               <option value="1" ${saved && saved.hoursPerDay == 1 ? 'selected' : ''}>1 小时</option>
-              <option value="2" ${saved && saved.hoursPerDay == 2 ? 'selected' : ''} selected>2 小时</option>
+              <option value="2" ${isDefault2h ? 'selected' : ''}>2 小时</option>
               <option value="3" ${saved && saved.hoursPerDay == 3 ? 'selected' : ''}>3 小时</option>
               <option value="4" ${saved && saved.hoursPerDay == 4 ? 'selected' : ''}>4 小时</option>
             </select>
@@ -34,46 +76,11 @@ const Plan = {
         </button>
       </div>`;
 
-    let planHTML = '';
-    if (hasPlan) {
-      const done = saved.weeks.filter(w => w.status === 'done').length;
-      const total = saved.weeks.length;
-      planHTML = `
-        <div class="card">
-          <div class="card-header">📋 我的复习计划</div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);margin-bottom:8px;">
-            <span>完成进度</span><span>${done}/${total} 周</span>
-          </div>
-          <div class="progress-bar" style="margin-bottom:16px;">
-            <div class="progress-fill" style="width:${Math.round(done/total*100)}%;"></div>
-          </div>
-          <div id="plan-weeks">
-            ${saved.weeks.map((w, i) => {
-              const statusIcon = w.status === 'done' ? '✓' : w.status === 'active' ? '⏳' : '○';
-              const statusClass = w.status === 'done' ? 'tag-green' : w.status === 'active' ? 'tag-amber' : 'tag-gray';
-              const statusText = w.status === 'done' ? '已完成' : w.status === 'active' ? '进行中' : '待开始';
-              const opacity = w.status === 'done' ? '' : w.status === 'active' ? '' : 'opacity:0.65;';
-              return `
-                <div style="display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04);${opacity}">
-                  <div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;background:${w.status === 'active' ? 'var(--amber-500)' : 'var(--amber-100)'};color:${w.status === 'active' ? '#fff' : 'var(--amber-700)'};">${i+1}</div>
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-size:13px;font-weight:600;color:var(--gray-800);">${w.title}</div>
-                    <div style="font-size:11px;color:var(--gray-600);">${w.startDate} ~ ${w.endDate}</div>
-                  </div>
-                  <span class="tag ${statusClass}">${statusIcon} ${statusText}</span>
-                  ${w.status !== 'done' ? `<button class="btn btn-sm btn-primary mark-done-btn" data-week="${i}">标记完成</button>` : ''}
-                </div>`;
-            }).join('')}
-          </div>
-          <button id="btn-reset-plan" class="btn btn-sm btn-secondary" style="margin-top:12px;">🔄 重新制定</button>
-        </div>`;
-    }
-
     return `
       <div class="plan-page">
         <h2 style="font-size:20px;color:var(--amber-700);margin-bottom:16px;">📅 复习计划</h2>
         ${setupHTML}
-        <div id="plan-result">${planHTML}</div>
+        <div id="plan-result">${hasPlan ? this._buildPlanCard(saved) : ''}</div>
       </div>`;
   },
 
@@ -90,85 +97,59 @@ const Plan = {
         generateBtn.disabled = true;
         generateBtn.innerHTML = '<span class="spinner"></span> AI 正在生成计划...';
 
-        const result = await App.mockAI(() => mockGeneratePlan(examDate, level, hours));
+        try {
+          const result = await App.mockAI(() => mockGeneratePlan(examDate, level, hours));
 
-        const planData = {
-          examDate,
-          level,
-          hoursPerDay: hours,
-          weeks: result.weeks.map((w, i) => ({
-            ...w,
-            status: i === 0 ? 'active' : 'pending'
-          })),
-          createdAt: new Date().toISOString()
-        };
+          const planData = {
+            examDate,
+            level,
+            hoursPerDay: hours,
+            weeks: result.weeks.map((w, i) => ({
+              ...w,
+              status: i === 0 ? 'active' : 'pending'
+            })),
+            createdAt: new Date().toISOString()
+          };
 
-        localStorage.setItem('studyPlan', JSON.stringify(planData));
+          localStorage.setItem('studyPlan', JSON.stringify(planData));
 
-        generateBtn.disabled = false;
-        generateBtn.textContent = '🤖 AI 生成复习计划';
+          const planResult = document.getElementById('plan-result');
+          if (planResult) {
+            planResult.innerHTML = this._buildPlanCard(planData);
+            this.bindWeekButtons();
+            this.bindResetBtn();
+          }
 
-        // 刷新计划展示
-        const planResult = document.getElementById('plan-result');
-        if (planResult) {
-          const done = planData.weeks.filter(w => w.status === 'done').length;
-          const total = planData.weeks.length;
-          planResult.innerHTML = `
-            <div class="card">
-              <div class="card-header">📋 我的复习计划</div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);margin-bottom:8px;">
-                <span>完成进度</span><span>${done}/${total} 周</span>
-              </div>
-              <div class="progress-bar" style="margin-bottom:16px;">
-                <div class="progress-fill" style="width:${Math.round(done/total*100)}%;"></div>
-              </div>
-              <div id="plan-weeks">
-                ${planData.weeks.map((w, i) => {
-                  const statusIcon = '○';
-                  const statusText = i === 0 ? '进行中' : '待开始';
-                  const statusClass = i === 0 ? 'tag-amber' : 'tag-gray';
-                  const opacity = i === 0 ? '' : 'opacity:0.65;';
-                  return `
-                    <div style="display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04);${opacity}">
-                      <div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;background:${i===0 ? 'var(--amber-500)' : 'var(--amber-100)'};color:${i===0 ? '#fff' : 'var(--amber-700)'};">${i+1}</div>
-                      <div style="flex:1;min-width:0;">
-                        <div style="font-size:13px;font-weight:600;color:var(--gray-800);">${w.title}</div>
-                        <div style="font-size:11px;color:var(--gray-600);">${w.startDate} ~ ${w.endDate}</div>
-                      </div>
-                      <span class="tag ${statusClass}">${statusIcon} ${statusText}</span>
-                      <button class="btn btn-sm btn-primary mark-done-btn" data-week="${i}">标记完成</button>
-                    </div>`;
-                }).join('')}
-              </div>
-              <button id="btn-reset-plan" class="btn btn-sm btn-secondary" style="margin-top:12px;">🔄 重新制定</button>
-            </div>`;
-          Plan.bindWeekButtons();
-          Plan.bindResetBtn();
+          App.showToast('✅ 复习计划已生成！');
+        } catch (e) {
+          App.showToast('❌ 生成计划失败，请重试');
+        } finally {
+          generateBtn.disabled = false;
+          generateBtn.textContent = '🤖 AI 生成复习计划';
         }
-
-        App.showToast('✅ 复习计划已生成！');
       });
     }
 
-    this.bindWeekButtons();
-    this.bindResetBtn();
+    const saved = this._safeJSON(localStorage.getItem('studyPlan'), null);
+    if (saved && saved.weeks) {
+      this.bindWeekButtons();
+      this.bindResetBtn();
+    }
   },
 
   bindWeekButtons() {
     document.querySelectorAll('.mark-done-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const weekIdx = parseInt(btn.dataset.week);
-        const planData = JSON.parse(localStorage.getItem('studyPlan'));
+        const planData = this._safeJSON(localStorage.getItem('studyPlan'), null);
         if (!planData) return;
 
         planData.weeks[weekIdx].status = 'done';
-        // 激活下一周
         if (weekIdx + 1 < planData.weeks.length) {
           planData.weeks[weekIdx + 1].status = 'active';
         }
         localStorage.setItem('studyPlan', JSON.stringify(planData));
 
-        // 刷新页面
         App.handleRoute();
         App.showToast(`✅ 第 ${weekIdx + 1} 周已标记完成！`);
       });
