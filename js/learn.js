@@ -1,10 +1,21 @@
 const Learn = {
   currentTopic: null,
 
-  render() {
+  _getTopicId() {
     const hash = location.hash.slice(1);
-    const params = new URLSearchParams(hash.includes('&') ? hash.split('&').slice(1).join('&') : '');
-    const topicId = params.get('topic') || 'limit';
+    const idx = hash.indexOf('topic=');
+    if (idx === -1) return 'limit';
+    const start = idx + 6;
+    const end = hash.indexOf('&', start);
+    return end === -1 ? hash.slice(start) : hash.slice(start, end);
+  },
+
+  render() {
+    const topicId = this._getTopicId();
+
+    if (typeof TOPICS === 'undefined' || !Array.isArray(TOPICS)) {
+      return `<div class="empty-state"><div class="icon">🔍</div><p>知识数据加载失败</p></div>`;
+    }
 
     const topic = TOPICS.find(t => t.id === topicId);
     if (!topic) {
@@ -82,18 +93,19 @@ const Learn = {
     }
 
     const nextBtn = document.getElementById('btn-next-topic');
-    if (nextBtn && this.currentTopic) {
-      const nextOrder = this.currentTopic.order + 1;
-      const nextTopic = TOPICS.find(t => t.order === nextOrder);
-      if (nextTopic) {
-        nextBtn.textContent = `下一章：${nextTopic.title} →`;
-        nextBtn.addEventListener('click', () => {
-          location.hash = `#learn&topic=${nextTopic.id}`;
-        });
-      } else {
-        nextBtn.textContent = '已是最后一章';
-        nextBtn.disabled = true;
-      }
+    if (!nextBtn || !this.currentTopic) return;
+
+    const nextOrder = this.currentTopic.order + 1;
+    const nextTopic = TOPICS.find(t => t.order === nextOrder);
+    if (nextTopic) {
+      nextBtn.textContent = `下一章：${nextTopic.title} →`;
+      nextBtn.onclick = () => {
+        location.hash = `#learn&topic=${nextTopic.id}`;
+      };
+    } else {
+      nextBtn.textContent = '已是最后一章';
+      nextBtn.disabled = true;
+      nextBtn.onclick = null;
     }
   }
 };
