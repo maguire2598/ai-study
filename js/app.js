@@ -1,6 +1,6 @@
 // 主控制器
 const App = {
-  currentModule: null,
+  _bus: null,
 
   init() {
     this.bindNavLinks();
@@ -19,6 +19,17 @@ const App = {
   setActiveNav(activeLink) {
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     if (activeLink) activeLink.classList.add('active');
+  },
+
+  // 事件总线
+  emit(eventName, detail) {
+    if (!this._bus) this._bus = document.createElement('div');
+    this._bus.dispatchEvent(new CustomEvent(eventName, { detail }));
+  },
+
+  on(eventName, handler) {
+    if (!this._bus) this._bus = document.createElement('div');
+    this._bus.addEventListener(eventName, handler);
   },
 
   handleRoute() {
@@ -43,13 +54,13 @@ const App = {
     }
   },
 
-  renderDashboard(main) { main.innerHTML = Dashboard.render(); Dashboard.init(); },
-  renderPlan(main) { main.innerHTML = Plan.render(); Plan.init(); },
-  renderGraph(main) { main.innerHTML = KnowledgeGraph.render(); KnowledgeGraph.init(); },
-  renderLearn(main) { main.innerHTML = Learn.render(); Learn.init(); },
-  renderPractice(main) { main.innerHTML = Practice.render(); Practice.init(); },
-  renderExam(main) { main.innerHTML = Exam.render(); Exam.init(); },
-  renderNotebook(main) { main.innerHTML = Notebook.render(); Notebook.init(); },
+  renderDashboard(main) { if (typeof Dashboard !== 'undefined') { main.innerHTML = Dashboard.render(); Dashboard.init(); } },
+  renderPlan(main) { if (typeof Plan !== 'undefined') { main.innerHTML = Plan.render(); Plan.init(); } },
+  renderGraph(main) { if (typeof KnowledgeGraph !== 'undefined') { main.innerHTML = KnowledgeGraph.render(); KnowledgeGraph.init(); } },
+  renderLearn(main) { if (typeof Learn !== 'undefined') { main.innerHTML = Learn.render(); Learn.init(); } },
+  renderPractice(main) { if (typeof Practice !== 'undefined') { main.innerHTML = Practice.render(); Practice.init(); } },
+  renderExam(main) { if (typeof Exam !== 'undefined') { main.innerHTML = Exam.render(); Exam.init(); } },
+  renderNotebook(main) { if (typeof Notebook !== 'undefined') { main.innerHTML = Notebook.render(); Notebook.init(); } },
 
   // Toast 提示
   showToast(msg) {
