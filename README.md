@@ -13,16 +13,37 @@
 
 ## 本地运行
 
+无需安装任何依赖。
+
+### macOS
+
 ```bash
-# 直接双击打开（macOS）
+# 直接双击打开
 open index.html
 
-# 或启动本地服务器
+# 或启动本地服务器（支持局域网其他设备访问）
 python3 -m http.server 8080
 # 浏览器访问 http://localhost:8080
 ```
 
-无需安装任何依赖。
+### Windows
+
+```bash
+# 直接双击 index.html 即可在默认浏览器打开
+
+# 或启动本地服务器
+python -m http.server 8080
+# 浏览器访问 http://localhost:8080
+```
+
+### Android
+
+推荐使用 HTTP 服务器 App，例如：
+
+1. 安装 [HTTP Server](https://play.google.com/store/apps/details?id=com.icecoldapps.httpserver) 或 [Simple HTTP Server](https://play.google.com/store/apps/details?id=com.phlox.simpleserver)
+2. 下载项目 ZIP 解压到手机存储
+3. 在 App 中设置根目录指向解压后的文件夹，启动服务器
+4. 浏览器访问 `http://localhost:8080`（或 App 显示的地址）
 
 ## 技术栈
 
