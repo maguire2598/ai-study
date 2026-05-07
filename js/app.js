@@ -78,19 +78,21 @@ const App = {
     });
   },
 
-  // 渲染 KaTeX
+  // 渲染 KaTeX 数学公式（直接渲染 .math-content 内的 LaTeX 代码）
   renderMath(el) {
-    if (typeof renderMathInElement === 'function') {
-      renderMathInElement(el, {
-        delimiters: [
-          { left: '\\[', right: '\\]', display: true },
-          { left: '\\(', right: '\\)', display: false },
-          { left: '$$', right: '$$', display: false },
-          { left: '\\\\', right: '\\\\', display: false }
-        ],
-        throwOnError: false
-      });
-    }
+    if (typeof katex === 'undefined') return;
+    el.querySelectorAll('.math-content').forEach(span => {
+      const latex = span.textContent.trim();
+      if (!latex) return;
+      try {
+        katex.render(latex, span, {
+          throwOnError: false,
+          displayMode: span.classList.contains('math-block')
+        });
+      } catch (e) {
+        // 渲染失败时保留原文
+      }
+    });
   }
 };
 

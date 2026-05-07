@@ -181,6 +181,8 @@ select.input { cursor: pointer; }
 
 /* KaTeX display fix */
 .katex-display { overflow-x: auto; overflow-y: hidden; }
+.math-content .katex { font-size: 1.05em; }
+.math-block { display: block; margin: 8px 0; text-align: center; }
 
 /* Toast */
 .toast {

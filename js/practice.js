@@ -195,7 +195,7 @@ const Practice = {
                 🤖 AI 解析 · ${idx === q.answer ? '✅ 回答正确！' : '❌ 回答错误'}
               </div>
               <div style="font-size:13px;color:var(--amber-700);line-height:1.8;" class="math-content">${q.analysis}</div>
-              ${q.keyFormula ? `<div style="margin-top:8px;padding:8px 12px;background:var(--amber-100);border-radius:8px;font-size:12px;color:var(--amber-700);"><strong>关键公式：</strong><span class="math-content">${q.keyFormula}</span></div>` : ''}
+              ${q.keyFormula ? `<div style="margin-top:8px;padding:8px 12px;background:var(--amber-100);border-radius:8px;font-size:12px;color:var(--amber-700);"><strong>关键公式：</strong><span class="math-content math-block">${q.keyFormula}</span></div>` : ''}
             </div>`;
           App.renderMath(fbEl);
         }
