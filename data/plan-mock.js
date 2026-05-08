@@ -6,22 +6,23 @@ function mockGeneratePlan(examDate, level, hoursPerDay) {
 
   // 根据水平和每日时长调整节奏
   const chapterDays = {
-    '优秀': [3, 3, 2, 4, 4, 3, 3, 3],
-    '中等': [4, 4, 3, 5, 5, 4, 4, 4],
-    '基础较薄弱': [5, 5, 4, 6, 6, 4, 5, 5]
+    '优秀': [2, 3, 3, 2, 4, 3, 3, 4, 3],
+    '中等': [3, 4, 4, 3, 5, 4, 4, 5, 4],
+    '基础较薄弱': [4, 5, 5, 4, 6, 5, 5, 6, 4]
   };
   const hourMultiplier = Math.max(0.5, Math.min(2, 2 / hoursPerDay));
 
   const days = chapterDays[level] || chapterDays['中等'];
   const chapters = [
-    { id: 'limit', title: '函数与极限' },
-    { id: 'derivative', title: '导数与微分' },
-    { id: 'mean-value', title: '微分中值定理' },
-    { id: 'indefinite-integral', title: '不定积分' },
-    { id: 'definite-integral', title: '定积分' },
-    { id: 'diff-eq', title: '微分方程' },
-    { id: 'multi-var', title: '多元函数微分学' },
-    { id: 'multi-integral', title: '重积分' }
+    { id: 'functions', title: '函数' },
+    { id: 'limits', title: '极限与连续' },
+    { id: 'derivatives', title: '导数' },
+    { id: 'derivative-apps', title: '导数的应用' },
+    { id: 'integration', title: '积分' },
+    { id: 'integration-apps', title: '积分的应用' },
+    { id: 'transcendental', title: '超越函数' },
+    { id: 'integration-tech', title: '积分技巧' },
+    { id: 'diff-eq', title: '微分方程' }
   ];
 
   const weeks = [];

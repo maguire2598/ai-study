@@ -1,39 +1,63 @@
-// 高数知识点数据
+// 高数知识点数据 — 基于 Thomas' Calculus 第13版 + GPA3.94高等数学笔记
 const TOPICS = [
   {
-    id: 'limit',
-    title: '函数与极限',
+    id: 'functions',
+    title: '函数',
     order: 1,
     dependsOn: [],
     concepts: [
-      '函数的概念与性质',
-      '数列的极限',
-      '函数的极限',
-      '无穷小与无穷大',
-      '极限运算法则',
-      '极限存在准则与两个重要极限',
-      '无穷小的比较',
-      '函数的连续性'
+      '函数及其图像',
+      '函数的复合与变换',
+      '三角函数',
+      '指数函数',
+      '反函数与对数',
+      '函数的变化率'
     ],
     bilibili: {
       url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
       teacher: '宋浩老师',
-      title: '《高等数学》函数与极限',
-      duration: '约 120 分钟'
+      title: '《高等数学》函数基础',
+      duration: '约 90 分钟'
     },
     icon: '📈'
   },
   {
-    id: 'derivative',
-    title: '导数与微分',
+    id: 'limits',
+    title: '极限与连续',
     order: 2,
-    dependsOn: ['limit'],
+    dependsOn: ['functions'],
     concepts: [
-      '导数的概念',
+      '变化率与切线',
+      '函数的极限及其运算法则',
+      '极限的精确性定义',
+      '单侧极限',
+      '连续性',
+      '涉及无穷的极限与渐近线'
+    ],
+    bilibili: {
+      url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
+      teacher: '宋浩老师',
+      title: '《高等数学》极限与连续',
+      duration: '约 120 分钟'
+    },
+    icon: '🔢'
+  },
+  {
+    id: 'derivatives',
+    title: '导数',
+    order: 3,
+    dependsOn: ['limits'],
+    concepts: [
+      '切线与导数',
+      '导函数',
       '求导法则',
-      '高阶导数',
-      '隐函数及参数方程求导',
-      '函数的微分'
+      '三角函数导数',
+      '链式法则',
+      '隐函数求导',
+      '反函数与对数求导',
+      '反三角函数求导',
+      '相关变化率',
+      '线性化与微分'
     ],
     bilibili: {
       url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
@@ -44,73 +68,121 @@ const TOPICS = [
     icon: '📐'
   },
   {
-    id: 'mean-value',
-    title: '微分中值定理',
-    order: 3,
-    dependsOn: ['derivative'],
+    id: 'derivative-apps',
+    title: '导数的应用',
+    order: 4,
+    dependsOn: ['derivatives'],
     concepts: [
-      '罗尔定理',
-      '拉格朗日中值定理',
-      '柯西中值定理',
+      '函数的极值与最值',
+      '四大中值定理',
+      '单调性与一阶导数判别法',
+      '凹凸性与二阶导数判别法',
+      '拐点与函数作图',
       '洛必达法则',
-      '泰勒公式'
+      '牛顿切线法',
+      '经济应用（边际分析）'
     ],
     bilibili: {
       url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
       teacher: '宋浩老师',
-      title: '《高等数学》微分中值定理',
-      duration: '约 100 分钟'
+      title: '《高等数学》导数的应用',
+      duration: '约 120 分钟'
     },
     icon: '📊'
   },
   {
-    id: 'indefinite-integral',
-    title: '不定积分',
-    order: 4,
-    dependsOn: ['derivative'],
-    concepts: [
-      '不定积分的概念与性质',
-      '换元积分法',
-      '分部积分法',
-      '有理函数的积分'
-    ],
-    bilibili: {
-      url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
-      teacher: '宋浩老师',
-      title: '《高等数学》不定积分',
-      duration: '约 130 分钟'
-    },
-    icon: '∫'
-  },
-  {
-    id: 'definite-integral',
-    title: '定积分',
+    id: 'integration',
+    title: '积分',
     order: 5,
-    dependsOn: ['indefinite-integral'],
+    dependsOn: ['derivatives'],
     concepts: [
-      '定积分的概念与性质',
-      '微积分基本公式',
-      '定积分的换元法和分部积分法',
+      '面积与定积分',
+      '微积分基本定理',
+      '不定积分与换元法',
+      '定积分的换元法',
+      '分部积分法',
       '反常积分'
     ],
     bilibili: {
       url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
       teacher: '宋浩老师',
-      title: '《高等数学》定积分',
-      duration: '约 120 分钟'
+      title: '《高等数学》积分',
+      duration: '约 130 分钟'
+    },
+    icon: '∫'
+  },
+  {
+    id: 'integration-apps',
+    title: '积分的应用',
+    order: 6,
+    dependsOn: ['integration'],
+    concepts: [
+      '旋转体体积',
+      '弧长计算',
+      '旋转曲面面积',
+      '质心与形心',
+      '物理与工程应用'
+    ],
+    bilibili: {
+      url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
+      teacher: '宋浩老师',
+      title: '《高等数学》积分的应用',
+      duration: '约 100 分钟'
     },
     icon: '∬'
   },
   {
+    id: 'transcendental',
+    title: '超越函数',
+    order: 7,
+    dependsOn: ['integration'],
+    concepts: [
+      '自然对数与指数函数',
+      '指数增长与衰减',
+      '反三角函数',
+      '双曲函数',
+      '相对变化率'
+    ],
+    bilibili: {
+      url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
+      teacher: '宋浩老师',
+      title: '《高等数学》超越函数',
+      duration: '约 100 分钟'
+    },
+    icon: '📉'
+  },
+  {
+    id: 'integration-tech',
+    title: '积分技巧',
+    order: 8,
+    dependsOn: ['integration', 'transcendental'],
+    concepts: [
+      '三角积分',
+      '三角换元',
+      '部分分式积分',
+      '积分表的使用',
+      '数值积分（梯形法则、Euler法）',
+      '广义积分'
+    ],
+    bilibili: {
+      url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
+      teacher: '宋浩老师',
+      title: '《高等数学》积分技巧',
+      duration: '约 110 分钟'
+    },
+    icon: '🔣'
+  },
+  {
     id: 'diff-eq',
     title: '微分方程',
-    order: 6,
-    dependsOn: ['indefinite-integral'],
+    order: 9,
+    dependsOn: ['integration', 'integration-tech'],
     concepts: [
-      '微分方程的基本概念',
-      '可分离变量的微分方程',
+      '微分方程基本概念',
       '一阶线性微分方程',
-      '二阶常系数线性微分方程'
+      '可分离变量方程',
+      '欧拉方法',
+      '二阶常系数线性方程'
     ],
     bilibili: {
       url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
@@ -119,44 +191,5 @@ const TOPICS = [
       duration: '约 100 分钟'
     },
     icon: '🔢'
-  },
-  {
-    id: 'multi-var',
-    title: '多元函数微分学',
-    order: 7,
-    dependsOn: ['derivative'],
-    concepts: [
-      '多元函数的基本概念',
-      '偏导数',
-      '全微分',
-      '多元复合函数求导',
-      '隐函数求导'
-    ],
-    bilibili: {
-      url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
-      teacher: '宋浩老师',
-      title: '《高等数学》多元函数微分学',
-      duration: '约 140 分钟'
-    },
-    icon: '🌐'
-  },
-  {
-    id: 'multi-integral',
-    title: '重积分',
-    order: 8,
-    dependsOn: ['definite-integral', 'multi-var'],
-    concepts: [
-      '二重积分的概念与性质',
-      '二重积分的计算',
-      '三重积分',
-      '重积分的应用'
-    ],
-    bilibili: {
-      url: 'https://www.bilibili.com/video/BV1CAxaeHEeH/',
-      teacher: '宋浩老师',
-      title: '《高等数学》重积分',
-      duration: '约 120 分钟'
-    },
-    icon: '📊'
   }
 ];

@@ -4,7 +4,7 @@ const Learn = {
   _getTopicId() {
     const hash = location.hash.slice(1);
     const idx = hash.indexOf('topic=');
-    if (idx === -1) return 'limit';
+    if (idx === -1) return 'limits';
     const start = idx + 6;
     const end = hash.indexOf('&', start);
     return end === -1 ? hash.slice(start) : hash.slice(start, end);
