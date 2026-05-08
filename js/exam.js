@@ -228,13 +228,48 @@ const Exam = {
       </div>`;
   },
 
+  _renderStart() {
+    const totalQuestions = Math.min(20, QUESTIONS.length);
+    return `
+      <div class="exam-start-page" style="text-align:center;padding:40px 20px;">
+        <div style="font-size:64px;margin-bottom:16px;">🎯</div>
+        <h2 style="font-size:24px;color:var(--amber-700);margin-bottom:8px;">模拟考试 · 高数期末</h2>
+        <p style="font-size:14px;color:var(--gray-600);margin-bottom:24px;">基于 Thomas' Calculus 教材内容</p>
+
+        <div class="card" style="max-width:400px;margin:0 auto 24px;text-align:left;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--amber-100);">
+            <span style="color:var(--gray-600);">📝 题目数量</span>
+            <span style="font-weight:600;color:var(--gray-800);">${totalQuestions} 题（覆盖全部章节）</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--amber-100);">
+            <span style="color:var(--gray-600);">⏱ 考试时长</span>
+            <span style="font-weight:600;color:var(--gray-800);">90 分钟</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--amber-100);">
+            <span style="color:var(--gray-600);">📊 题型</span>
+            <span style="font-weight:600;color:var(--gray-800);">选择题 + 填空题</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;">
+            <span style="color:var(--gray-600);">📋 题目覆盖</span>
+            <span style="font-weight:600;color:var(--gray-800);">${TOPICS.length} 个章节各至少 1 题</span>
+          </div>
+        </div>
+
+        <div style="font-size:12px;color:var(--gray-400);margin-bottom:24px;line-height:1.8;">
+          ⚠️ 开始后倒计时立即启动，中途不可暂停<br>
+          💡 建议在安静环境中连续完成，模拟真实考试<br>
+          📒 交卷后可查看 AI 薄弱分析
+        </div>
+
+        <button id="btn-start-exam" class="btn btn-primary" style="font-size:18px;padding:14px 48px;">
+          🚀 开始考试
+        </button>
+      </div>`;
+  },
+
   render() {
     if (this.finished) return this._renderResult();
-
-    if (!this.started) {
-      this.questions = this._generatePaper();
-    }
-
+    if (!this.started) return this._renderStart();
     return this._renderExam();
   },
 
@@ -261,8 +296,17 @@ const Exam = {
     }
 
     if (!this.started) {
-      this.started = true;
-      this._startTimer();
+      // 绑定开始考试按钮
+      const startBtn = document.getElementById('btn-start-exam');
+      if (startBtn) {
+        startBtn.addEventListener('click', () => {
+          this.questions = this._generatePaper();
+          this.started = true;
+          this._startTimer();
+          this._rerender();
+        });
+      }
+      return;
     }
 
     const container = document.querySelector('.exam-page');
