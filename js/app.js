@@ -6,6 +6,18 @@ const App = {
     this.bindNavLinks();
     this.handleRoute();
     window.addEventListener('hashchange', () => this.handleRoute());
+
+    // 初始化浮动聊天气泡
+    if (typeof ChatBubble !== 'undefined') ChatBubble.init();
+
+    // 绑定设置按钮
+    const settingsBtn = document.getElementById('nav-settings');
+    if (settingsBtn && typeof Settings !== 'undefined') {
+      settingsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        Settings.open();
+      });
+    }
   },
 
   bindNavLinks() {
@@ -76,6 +88,21 @@ const App = {
     return new Promise(resolve => {
       setTimeout(() => resolve(callback()), delay);
     });
+  },
+
+  // 统一 AI 调用入口
+  async askAI(systemPrompt, userMessage, options = {}) {
+    const config = AIService.getConfig();
+    if (!config.apiKey) {
+      App.showToast('⚠️ 请先在设置中配置 API Key');
+      throw new Error('missing_key');
+    }
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      ...(options.history || []),
+      { role: 'user', content: userMessage }
+    ];
+    return await AIService.chat(messages, options);
   },
 
   // 渲染 KaTeX 数学公式（直接渲染 .math-content 内的 LaTeX 代码）

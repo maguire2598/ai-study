@@ -124,7 +124,13 @@ const Practice = {
         <button id="btn-favorite-current" class="btn btn-sm btn-secondary">
           ${this.isFavorited(q.id) ? '⭐ 已收藏' : '☆ 收藏此题'}
         </button>
-      </div>`;
+      </div>
+      <div style="text-align:right;">
+        <button id="btn-ai-help" class="btn btn-sm" style="background:var(--amber-100);color:var(--amber-700);margin-top:8px;">
+          🤖 问 AI
+        </button>
+      </div>
+      <div id="ai-help-panel" style="display:none;"></div>`;
   },
 
   isFavorited(qid) {
@@ -280,6 +286,57 @@ const Practice = {
         localStorage.setItem('favorites', JSON.stringify(favs));
         favBtn.textContent = this.isFavorited(q.id) ? '⭐ 已收藏' : '☆ 收藏此题';
       };
+    }
+
+    // AI 求助按钮
+    const aiHelpBtn = document.getElementById('btn-ai-help');
+    if (aiHelpBtn) {
+      aiHelpBtn.addEventListener('click', async () => {
+        const q = this.filteredQuestions[this.currentIndex];
+        if (!q) return;
+
+        const panel = document.getElementById('ai-help-panel');
+        if (!panel) return;
+
+        panel.style.display = 'block';
+        panel.innerHTML = `
+          <div class="ai-help-panel">
+            <div class="ai-help-header">
+              <span>🤖 AI 解题助手</span>
+              <button id="btn-ai-help-close" class="btn-icon" style="color:var(--amber-700);">✕</button>
+            </div>
+            <div class="ai-help-body">
+              <div style="display:flex;align-items:center;gap:8px;color:var(--gray-400);">
+                <span class="spinner" style="width:14px;height:14px;"></span> AI 思考中...
+              </div>
+            </div>
+          </div>`;
+
+        document.getElementById('btn-ai-help-close').addEventListener('click', () => {
+          panel.style.display = 'none';
+        });
+
+        const topicTitle = TOPICS.find(t => t.id === q.topicId)?.title || '未知章节';
+        const typeLabel = q.type === 'choice' ? '选择题' : '填空题';
+        const optionsText = q.type === 'choice'
+          ? q.options.map((o, i) => `${['A','B','C','D'][i]}. ${o}`).join('\n')
+          : '';
+
+        const systemPrompt = '你是一位高数辅导老师。学生正在做一道题，请帮他理解题目、给出逐步解题思路。使用 LaTeX 格式（用 $$ 包裹）输出数学公式。请不要直接给出最终答案，而是引导他思考。';
+        const userMessage = `我在做一道${typeLabel}，来自章节"${topicTitle}"，题目如下：\n\n${q.stem}${optionsText ? '\n\n选项：\n' + optionsText : ''}\n\n请帮我分析这道题，告诉我应该怎么思考。`;
+
+        try {
+          const reply = await App.askAI(systemPrompt, userMessage);
+          const body = document.querySelector('.ai-help-body');
+          if (body) {
+            body.innerHTML = reply.replace(/\n/g, '<br>');
+            App.renderMath(body);
+          }
+        } catch (e) {
+          const body = document.querySelector('.ai-help-body');
+          if (body) body.innerHTML = `<span style="color:var(--red-500);">❌ AI 暂时不可用，请稍后重试</span>`;
+        }
+      });
     }
   },
 
