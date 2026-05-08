@@ -45,16 +45,18 @@ const App = {
   },
 
   handleRoute() {
-    const hash = location.hash.slice(1) || 'dashboard';
+    const fullHash = location.hash.slice(1) || 'dashboard';
+    // 提取基础路由（去掉 & 后面的参数）
+    const route = fullHash.includes('&') ? fullHash.split('&')[0] : fullHash;
     const main = document.getElementById('main-content');
     if (!main) return;
 
-    // 高亮导航
-    const navLink = document.querySelector(`.nav-links a[href="#${hash}"]`);
+    // 高亮导航（使用基础路由匹配）
+    const navLink = document.querySelector(`.nav-links a[href="#${route}"]`);
     this.setActiveNav(navLink);
 
     // 根据路由渲染对应模块
-    switch (hash) {
+    switch (route) {
       case 'dashboard': this.renderDashboard(main); break;
       case 'plan': this.renderPlan(main); break;
       case 'graph': this.renderGraph(main); break;
