@@ -329,7 +329,14 @@ const Practice = {
           const reply = await App.askAI(systemPrompt, userMessage);
           const body = document.querySelector('.ai-help-body');
           if (body) {
-            body.innerHTML = reply.replace(/\n/g, '<br>');
+            // 转义 HTML 并将 LaTeX 公式包裹为 .math-content
+            const div = document.createElement('div');
+            div.textContent = reply;
+            let html = div.innerHTML;
+            html = html.replace(/\$\$([\s\S]*?)\$\$/g, '<span class="math-content math-block">$1</span>');
+            html = html.replace(/\$([^\$]+?)\$/g, '<span class="math-content">$1</span>');
+            html = html.replace(/\n/g, '<br>');
+            body.innerHTML = html;
             App.renderMath(body);
           }
         } catch (e) {

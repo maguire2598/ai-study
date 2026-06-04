@@ -49,7 +49,15 @@ const ChatBubble = {
   },
 
   _formatContent(text) {
-    return text.replace(/\n/g, '<br>');
+    // 先转义 HTML，再将 LaTeX 公式包裹为 .math-content 供 KaTeX 渲染
+    const escaped = this._escapeHtml(text);
+    // 处理块级公式 $$...$$
+    let html = escaped.replace(/\$\$([\s\S]*?)\$\$/g, '<span class="math-content math-block">$1</span>');
+    // 处理行内公式 $...$（避免匹配 $$ 残留）
+    html = html.replace(/\$([^\$]+?)\$/g, '<span class="math-content">$1</span>');
+    // 换行
+    html = html.replace(/\n/g, '<br>');
+    return html;
   },
 
   _scrollBottom() {
@@ -80,6 +88,11 @@ const ChatBubble = {
     const div = document.createElement('div');
     div.innerHTML = this.render();
     document.body.appendChild(div.firstElementChild);
+
+    // 渲染已有消息中的 LaTeX 公式
+    const body = document.getElementById('chat-panel-body');
+    if (body && typeof App !== 'undefined') App.renderMath(body);
+
     this._bindEvents();
   },
 
