@@ -4,14 +4,23 @@ const AIService = {
 
   _loadConfig() {
     if (this._config) return this._config;
-    const raw = localStorage.getItem('aiConfig');
     const defaults = {
       apiKey: 'sk-bbbee91c19474924875e6ec41b461eb4',
       model: 'deepseek-chat',
       baseURL: 'https://api.deepseek.com/v1'
     };
+    const raw = localStorage.getItem('aiConfig');
     if (raw) {
-      try { this._config = { ...defaults, ...JSON.parse(raw) }; } catch (e) { this._config = defaults; }
+      try {
+        const saved = JSON.parse(raw);
+        // 清除旧的百度千帆配置（baseURL 仍指向 qianfan 或 key 是 bce 格式）
+        if (saved.baseURL && saved.baseURL.includes('qianfan')) {
+          localStorage.removeItem('aiConfig');
+          this._config = defaults;
+          return this._config;
+        }
+        this._config = { ...defaults, ...saved };
+      } catch (e) { this._config = defaults; }
     } else {
       this._config = defaults;
     }

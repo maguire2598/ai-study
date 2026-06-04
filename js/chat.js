@@ -123,7 +123,16 @@ const ChatBubble = {
         const reply = await AIService.chat(msgs);
         this._messages.push({ role: 'assistant', content: reply });
       } catch (e) {
-        this._messages.push({ role: 'assistant', content: '❌ AI 暂时不可用，请稍后重试' });
+        const errMsg = e.message || String(e);
+        if (errMsg.includes('timeout')) {
+          this._messages.push({ role: 'assistant', content: '⏱️ 请求超时，请检查网络后重试' });
+        } else if (errMsg.includes('401') || errMsg.includes('403')) {
+          this._messages.push({ role: 'assistant', content: '🔑 API Key 无效，请在设置中更换' });
+        } else if (errMsg.includes('429')) {
+          this._messages.push({ role: 'assistant', content: '🚦 API 调用频率超限，请稍后再试' });
+        } else {
+          this._messages.push({ role: 'assistant', content: '❌ ' + errMsg });
+        }
       } finally {
         if (loading) loading.style.display = 'none';
         if (sendBtn) sendBtn.disabled = false;

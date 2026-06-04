@@ -410,7 +410,7 @@ const Exam = {
       el.innerHTML = reply.replace(/\n/g, '<br>');
       App.renderMath(el);
     } catch (e) {
-      el.innerHTML = '<div style="font-size:13px;color:var(--red-500);">❌ AI 分析暂时不可用</div>';
+      el.innerHTML = '<div style="font-size:13px;color:var(--red-500);">❌ ' + (e.message || String(e)) + '</div>';
       if (weakestTopics.length > 0) {
         el.innerHTML += '<div style="font-size:13px;color:var(--amber-700);margin-top:8px;">以下章节正确率低于 50%，建议重点复习：<br>' + weakestTopics.map(t => '⚠️ ' + t).join('<br>') + '</div>';
       }

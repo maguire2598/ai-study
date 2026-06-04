@@ -334,7 +334,8 @@ const Practice = {
           }
         } catch (e) {
           const body = document.querySelector('.ai-help-body');
-          if (body) body.innerHTML = `<span style="color:var(--red-500);">❌ AI 暂时不可用，请稍后重试</span>`;
+          const msg = e.message || String(e);
+          if (body) body.innerHTML = `<span style="color:var(--red-500);">❌ ${msg}</span>`;
         }
       });
     }
