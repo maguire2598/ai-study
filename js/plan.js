@@ -24,12 +24,13 @@ const Plan = {
             const statusClass = w.status === 'done' ? 'tag-green' : w.status === 'active' ? 'tag-amber' : 'tag-gray';
             const statusText = w.status === 'done' ? '已完成' : w.status === 'active' ? '进行中' : '待开始';
             const opacity = w.status === 'done' ? '' : w.status === 'active' ? '' : 'opacity:0.65;';
+            const totalHours = (w.tasks || []).reduce((sum, t) => sum + (t.hours || 0), 0);
             return `
               <div style="display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04);${opacity}">
                 <div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;background:${w.status === 'active' ? 'var(--amber-500)' : 'var(--amber-100)'};color:${w.status === 'active' ? '#fff' : 'var(--amber-700)'};">${i+1}</div>
                 <div style="flex:1;min-width:0;">
                   <div style="font-size:13px;font-weight:600;color:var(--gray-800);">${w.title}</div>
-                  <div style="font-size:11px;color:var(--gray-600);">${w.startDate} ~ ${w.endDate}</div>
+                  <div style="font-size:11px;color:var(--gray-600);">预计学习 ${totalHours} 小时  ·  ${w.startDate} ~ ${w.endDate}</div>
                 </div>
                 <span class="tag ${statusClass}">${statusIcon} ${statusText}</span>
                 ${w.status !== 'done' ? `<button class="btn btn-sm btn-primary mark-done-btn" data-week="${i}">标记完成</button>` : ''}
@@ -86,6 +87,19 @@ const Plan = {
   },
 
   init() {
+    // 清除旧的超期计划（最后一周结束日期 > 考试日期）
+    const savedCheck = this._safeJSON(localStorage.getItem('studyPlan'), null);
+    if (savedCheck && savedCheck.weeks && savedCheck.weeks.length > 0 && savedCheck.examDate) {
+      const lastWeek = savedCheck.weeks[savedCheck.weeks.length - 1];
+      if (lastWeek.endDate > savedCheck.examDate) {
+        localStorage.removeItem('studyPlan');
+        if (document.getElementById('plan-result')) {
+          document.getElementById('plan-result').innerHTML = '';
+        }
+        App.showToast('🔄 旧版计划已清除，请重新生成');
+      }
+    }
+
     const generateBtn = document.getElementById('btn-generate-plan');
     if (generateBtn) {
       generateBtn.addEventListener('click', async () => {
