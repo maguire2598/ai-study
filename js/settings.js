@@ -11,13 +11,11 @@ const Settings = {
           </div>
           <div class="settings-body">
             <label class="settings-label">🔑 API Key</label>
-            <input type="password" id="settings-apikey" class="input" value="${this._escapeAttr(config.apiKey || '')}" placeholder="输入千帆 API Key">
+            <input type="password" id="settings-apikey" class="input" value="${this._escapeAttr(config.apiKey || '')}" placeholder="输入 DeepSeek API Key">
             <label class="settings-label" style="margin-top:12px;">🧠 模型</label>
             <select id="settings-model" class="input">
-              <option value="ernie-speed-8k" ${config.model === 'ernie-speed-8k' ? 'selected' : ''}>ERNIE-Speed-8K（免费）</option>
-              <option value="ernie-speed-128k" ${config.model === 'ernie-speed-128k' ? 'selected' : ''}>ERNIE-Speed-128K</option>
-              <option value="ernie-lite-8k" ${config.model === 'ernie-lite-8k' ? 'selected' : ''}>ERNIE-Lite-8K</option>
-              <option value="ernie-4.0-turbo-128k" ${config.model === 'ernie-4.0-turbo-128k' ? 'selected' : ''}>ERNIE-4.0-Turbo-128K</option>
+              <option value="deepseek-chat" ${config.model === 'deepseek-chat' ? 'selected' : ''}>DeepSeek-Chat（通用）</option>
+              <option value="deepseek-reasoner" ${config.model === 'deepseek-reasoner' ? 'selected' : ''}>DeepSeek-Reasoner（推理增强）</option>
             </select>
             <button id="btn-settings-save" class="btn btn-primary" style="width:100%;margin-top:16px;">💾 保存设置</button>
             <p style="font-size:11px;color:var(--gray-400);margin-top:8px;text-align:center;">API Key 仅存储在浏览器本地，不会上传到任何服务端</p>

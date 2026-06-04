@@ -1,4 +1,4 @@
-// AI 服务层 — 封装百度千帆 API 调用
+// AI 服务层 — 封装 DeepSeek API 调用（OpenAI 兼容接口）
 const AIService = {
   _config: null,
 
@@ -6,9 +6,9 @@ const AIService = {
     if (this._config) return this._config;
     const raw = localStorage.getItem('aiConfig');
     const defaults = {
-      apiKey: 'bce-v3/ALTAK-whYKs6BmFUowQhIaH2Mv6/c11251e7f38193c1df52ef2d294ded4d72bf026e',
-      model: 'ernie-speed-8k',
-      baseURL: 'https://qianfan.baidubce.com/v2'
+      apiKey: 'sk-bbbee91c19474924875e6ec41b461eb4',
+      model: 'deepseek-chat',
+      baseURL: 'https://api.deepseek.com/v1'
     };
     if (raw) {
       try { this._config = { ...defaults, ...JSON.parse(raw) }; } catch (e) { this._config = defaults; }
