@@ -74,7 +74,7 @@ const Plan = {
           </div>
         </div>
         <button id="btn-generate-plan" class="btn btn-primary" style="width:100%;">
-          🤖 AI 生成复习计划
+          📋 生成复习计划
         </button>
       </div>`;
 
@@ -110,10 +110,10 @@ const Plan = {
         if (!examDate) { App.showToast('请先选择考试日期'); return; }
 
         generateBtn.disabled = true;
-        generateBtn.innerHTML = '<span class="spinner"></span> AI 正在生成计划...';
+        generateBtn.innerHTML = '<span class="spinner"></span> 正在生成计划...';
 
         try {
-          const result = await App.mockAI(() => mockGeneratePlan(examDate, level, hours));
+          const result = await App.mockDelay(() => mockGeneratePlan(examDate, level, hours));
 
           const planData = {
             examDate,
@@ -140,7 +140,7 @@ const Plan = {
           App.showToast('❌ 生成计划失败，请重试');
         } finally {
           generateBtn.disabled = false;
-          generateBtn.textContent = '🤖 AI 生成复习计划';
+          generateBtn.textContent = '📋 生成复习计划';
         }
       });
     }

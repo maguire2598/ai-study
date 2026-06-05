@@ -44,7 +44,7 @@ const Dashboard = {
         <div class="card" style="text-align:center;">
           <div style="font-size:42px;margin-bottom:8px;">📅</div>
           <div style="font-size:16px;font-weight:600;color:var(--amber-700);margin-bottom:8px;">还没有复习计划</div>
-          <div style="font-size:13px;color:var(--gray-600);margin-bottom:12px;">让 AI 帮你制定专属高数复习计划</div>
+          <div style="font-size:13px;color:var(--gray-600);margin-bottom:12px;">制定你的专属高数复习计划</div>
           <a href="#plan" class="btn btn-primary" style="text-decoration:none;">开始制定 →</a>
         </div>`;
     }

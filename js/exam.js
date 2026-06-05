@@ -119,9 +119,8 @@ const Exam = {
         return t ? t.title : tid;
       });
 
-    // 保存供 AI 分析使用
+    // 保存答题详情
     this._examDetails = details;
-    this._weakestTopics = weakestTopics;
 
     return `
       <div class="exam-result">
@@ -131,15 +130,6 @@ const Exam = {
           <div style="font-size:48px;font-weight:700;color:${score >= 60 ? 'var(--green-500)' : 'var(--red-500)'};">${score}</div>
           <div style="font-size:14px;color:var(--gray-600);">分 · ${correctCount}/${this.questions.length} 题正确</div>
           <div style="margin-top:8px;">${score >= 90 ? '🎉' : score >= 60 ? '👍' : '💪'} ${score >= 90 ? '非常优秀！' : score >= 60 ? '已达标，继续加油！' : '还需努力，看看薄弱分析吧'}</div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">🤖 AI 薄弱分析</div>
-          <div id="exam-ai-analysis">
-            <div style="display:flex;align-items:center;gap:8px;color:var(--gray-400);">
-              <span class="spinner" style="width:14px;height:14px;"></span> AI 正在分析你的错题...
-            </div>
-          </div>
         </div>
 
         <div class="card">
@@ -258,7 +248,7 @@ const Exam = {
         <div style="font-size:12px;color:var(--gray-400);margin-bottom:24px;line-height:1.8;">
           ⚠️ 开始后倒计时立即启动，中途不可暂停<br>
           💡 建议在安静环境中连续完成，模拟真实考试<br>
-          📒 交卷后可查看 AI 薄弱分析
+          📒 交卷后可查看答题详情
         </div>
 
         <button id="btn-start-exam" class="btn btn-primary" style="font-size:18px;padding:14px 48px;">
@@ -290,8 +280,7 @@ const Exam = {
       }
       const resultEl = document.querySelector('.exam-result');
       if (resultEl) App.renderMath(resultEl);
-      // 触发 AI 薄弱分析
-      this._requestAIAnalysis();
+      // 交卷完成
       return;
     }
 
@@ -379,41 +368,6 @@ const Exam = {
           this._submitExam();
         }
       };
-    }
-  },
-
-  async _requestAIAnalysis() {
-    const details = this._examDetails || [];
-    const weakestTopics = this._weakestTopics || [];
-    const wrongList = details.filter(d => !d.isCorrect);
-
-    const el = document.getElementById('exam-ai-analysis');
-    if (!el) return;
-
-    if (wrongList.length === 0) {
-      el.innerHTML = '<div style="font-size:13px;color:var(--green-600);">✅ 全部正确，无需分析！继续保持！</div>';
-      return;
-    }
-
-    const wrongText = wrongList.map((d, i) => {
-      const topic = TOPICS.find(t => t.id === d.topicId);
-      const answerLabel = d.type === 'choice' ? ['A','B','C','D'][d.answer] : d.answer;
-      return `${i + 1}. [${topic ? topic.title : '未知'}] ${d.stem}\n   正确答案: ${answerLabel}`;
-    }).join('\n\n');
-
-    const systemPrompt = '你是一位高数教学评估专家。根据学生的模考错题，分析薄弱章节，给出具体复习建议。使用 LaTeX 格式（用 $$ 包裹）输出数学公式。回复简洁，分点列出。';
-    const score = Math.round((details.filter(d => d.isCorrect).length / details.length) * 100);
-    const userMessage = `学生完成了一次高数模考，得分 ${score} 分，共 ${details.length} 题，错 ${wrongList.length} 题。以下是错题详情：\n\n${wrongText}\n\n请分析学生的薄弱点并给出复习建议。`;
-
-    try {
-      const reply = await App.askAI(systemPrompt, userMessage);
-      el.innerHTML = reply.replace(/\n/g, '<br>');
-      App.renderMath(el);
-    } catch (e) {
-      el.innerHTML = '<div style="font-size:13px;color:var(--red-500);">❌ ' + (e.message || String(e)) + '</div>';
-      if (weakestTopics.length > 0) {
-        el.innerHTML += '<div style="font-size:13px;color:var(--amber-700);margin-top:8px;">以下章节正确率低于 50%，建议重点复习：<br>' + weakestTopics.map(t => '⚠️ ' + t).join('<br>') + '</div>';
-      }
     }
   },
 
